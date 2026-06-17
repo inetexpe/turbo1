@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURBO2K — Premium Tuning-Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06060a;
+    --surface:#0e0e16;
+    --surface-2:#14141f;
+    --border:#23232f;
+    --blue:#00d4ff;
+    --blue-dim:#0099bb;
+    --amber:#ffb800;
+    --text:#eceef2;
+    --muted:#8888a0;
+    --muted-2:#5c5c70;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.eyebrow,.logo,.nav-link,.btn,.price-tag,.step-num{
+    font-family:'Rajdhani',sans-serif;
+  }
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  ::selection{background:var(--blue);color:#000;}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:3px;}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
+  }
+
+  .container{max-width:1180px;margin:0 auto;padding:0 24px;}
+  section{position:relative;padding:120px 0;}
+  @media (max-width:768px){section{padding:80px 0;}}
+
+  .eyebrow{
+    font-size:13px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'';width:24px;height:2px;background:var(--blue);}
+
+  .section-title{
+    font-size:clamp(32px,4.4vw,52px);font-weight:700;line-height:1.1;
+    letter-spacing:.01em;margin-bottom:18px;
+  }
+  .section-sub{color:var(--muted);font-size:17px;max-width:560px;line-height:1.6;}
+
+  /* ===== NAVBAR ===== */
+  .navbar{
+    position:fixed;top:0;left:0;right:0;z-index:1000;
+    padding:22px 0;transition:background .35s,padding .35s,border-color .35s;
+    border-bottom:1px solid transparent;
+  }
+  .navbar.scrolled{
+    background:rgba(6,6,10,0.88);backdrop-filter:blur(14px);
+    padding:14px 0;border-bottom-color:var(--border);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-size:24px;font-weight:700;letter-spacing:.04em;color:var(--text);display:flex;align-items:center;gap:8px;}
+  .logo span{color:var(--blue);}
+  .logo .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);}
+  .nav-links{display:flex;gap:34px;list-style:none;}
+  .nav-link{font-size:14px;font-weight:600;letter-spacing:.04em;color:var(--muted);transition:color .2s;}
+  .nav-link:hover{color:var(--text);}
+  .nav-cta{
+    background:var(--blue);color:#000;padding:10px 22px;border-radius:6px;
+    font-size:14px;font-weight:700;letter-spacing:.03em;transition:transform .2s,box-shadow .2s;
+  }
+  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,212,255,.35);}
+  .burger{display:none;width:26px;height:20px;position:relative;cursor:pointer;background:none;border:none;}
+  .burger span{position:absolute;left:0;width:100%;height:2px;background:var(--text);transition:.25s;}
+  .burger span:nth-child(1){top:0;} .burger span:nth-child(2){top:9px;} .burger span:nth-child(3){top:18px;}
+  .burger.open span:nth-child(1){top:9px;transform:rotate(45deg);}
+  .burger.open span:nth-child(2){opacity:0;}
+  .burger.open span:nth-child(3){top:9px;transform:rotate(-45deg);}
+
+  @media (max-width:860px){
+    .nav-links{
+      position:fixed;top:0;right:-280px;width:260px;height:100vh;
+      background:var(--surface);flex-direction:column;justify-content:center;
+      gap:28px;padding:0 36px;transition:right .35s;border-left:1px solid var(--border);
+    }
+    .nav-links.open{right:0;}
+    .nav-cta{display:none;}
+    .burger{display:block;}
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    min-height:100vh;display:flex;align-items:center;padding-top:90px;
+    background:
+      radial-gradient(ellipse 60% 50% at 75% 20%, rgba(0,212,255,0.14), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 15% 80%, rgba(255,184,0,0.08), transparent 60%),
+      var(--bg);
+    position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:48px 48px;mask-image:linear-gradient(to bottom, transparent, black 20%, black 70%, transparent);
+  }
+  .hero-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;position:relative;z-index:2;}
+  @media (max-width:980px){.hero-grid{grid-template-columns:1fr;}}
+
+  .hero-title{
+    font-size:clamp(40px,6.4vw,76px);font-weight:700;line-height:1.04;letter-spacing:.005em;
+    opacity:0;transform:translateY(24px);animation:heroIn .8s .15s forwards cubic-bezier(.22,1,.36,1);
+  }
+  .hero-title em{
+    font-style:normal;color:var(--blue);
+    background:linear-gradient(90deg,var(--blue),var(--amber));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .hero-sub{
+    margin-top:22px;font-size:18px;color:var(--muted);max-width:480px;line-height:1.65;
+    opacity:0;transform:translateY(20px);animation:heroIn .8s .32s forwards cubic-bezier(.22,1,.36,1);
+  }
+  .hero-actions{
+    margin-top:36px;display:flex;gap:16px;flex-wrap:wrap;
+    opacity:0;transform:translateY(20px);animation:heroIn .8s .48s forwards cubic-bezier(.22,1,.36,1);
+  }
+  .hero-stats{
+    margin-top:54px;display:flex;gap:42px;
+    opacity:0;transform:translateY(20px);animation:heroIn .8s .64s forwards cubic-bezier(.22,1,.36,1);
+  }
+  .stat-num{font-size:30px;font-weight:700;color:var(--text);}
+  .stat-num span{color:var(--blue);}
+  .stat-label{font-size:13px;color:var(--muted-2);margin-top:2px;}
+
+  @keyframes heroIn{to{opacity:1;transform:translateY(0);}}
+
+  /* Tachometer signature element */
+  .tacho-wrap{
+    display:flex;justify-content:center;align-items:center;position:relative;
+    opacity:0;animation:fadeIn 1s .5s forwards;
+  }
+  @keyframes fadeIn{to{opacity:1;}}
+  .tacho{width:min(380px,90%);aspect-ratio:1;position:relative;}
+  .tacho svg{width:100%;height:100%;}
+  .tacho-needle{
+    transform-origin:200px 200px;
+    transform:rotate(-120deg);
+    animation:rev 2.6s .6s cubic-bezier(.25,1,.4,1) forwards;
+  }
+  @keyframes rev{
+    0%{transform:rotate(-120deg);}
+    55%{transform:rotate(108deg);}
+    75%{transform:rotate(58deg);}
+    100%{transform:rotate(78deg);}
+  }
+  .tacho-glow{
+    position:absolute;inset:0;border-radius:50%;
+    background:radial-gradient(circle, rgba(0,212,255,0.18), transparent 70%);
+    animation:glowPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes glowPulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+  .tacho-readout{
+    position:absolute;top:62%;left:50%;transform:translate(-50%,-50%);text-align:center;
+  }
+  .tacho-readout .rpm{font-size:13px;color:var(--muted-2);letter-spacing:.15em;}
+  .tacho-readout .val{font-size:34px;font-weight:700;color:var(--amber);}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:15px 30px;border-radius:7px;font-size:15px;font-weight:700;
+    letter-spacing:.03em;cursor:pointer;border:none;transition:transform .2s,box-shadow .25s,background .25s;
+  }
+  .btn-primary{background:var(--blue);color:#000;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,212,255,.4);}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+  .btn-amber{background:var(--amber);color:#1a1200;}
+  .btn-amber:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,184,0,.35);}
+  .btn-full{width:100%;}
+
+  /* ===== reveal-on-scroll ===== */
+  .reveal{opacity:0;transform:translateY(36px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  .reveal-d1.in{transition-delay:.08s;}
+  .reveal-d2.in{transition-delay:.16s;}
+  .reveal-d3.in{transition-delay:.24s;}
+  .reveal-d4.in{transition-delay:.32s;}
+
+  /* ===== ABOUT ===== */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;margin-top:54px;}
+  @media (max-width:860px){.about-grid{grid-template-columns:1fr;}}
+  .about-text{color:var(--muted);font-size:16px;line-height:1.75;}
+  .about-text strong{color:var(--text);}
+  .perks{display:flex;flex-direction:column;gap:26px;}
+  .perk{display:flex;gap:18px;align-items:flex-start;}
+  .perk-icon{
+    width:46px;height:46px;border-radius:10px;flex-shrink:0;
+    background:var(--surface-2);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;color:var(--blue);
+  }
+  .perk-icon svg{width:22px;height:22px;}
+  .perk h4{font-size:17px;font-weight:700;margin-bottom:5px;}
+  .perk p{font-size:14.5px;color:var(--muted);line-height:1.55;}
+
+  /* ===== SERVICES ===== */
+  .services{background:linear-gradient(180deg,var(--bg),var(--surface) 18%,var(--surface) 82%,var(--bg));}
+  .services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:54px;}
+  @media (max-width:860px){.services-grid{grid-template-columns:1fr;}}
+  .service-card{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:14px;
+    padding:34px;position:relative;overflow:hidden;
+    transition:transform .35s cubic-bezier(.22,1,.36,1),border-color .35s,box-shadow .35s;
+  }
+  .service-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--blue),var(--amber));
+    transform:scaleX(0);transform-origin:left;transition:transform .4s;
+  }
+  .service-card:hover{transform:translateY(-6px);border-color:rgba(0,212,255,.4);box-shadow:0 20px 40px rgba(0,0,0,.4);}
+  .service-card:hover::before{transform:scaleX(1);}
+  .service-tag{
+    font-size:12px;font-weight:700;letter-spacing:.18em;color:var(--blue);
+    background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);
+    display:inline-block;padding:4px 12px;border-radius:20px;margin-bottom:18px;
+  }
+  .service-card h3{font-size:23px;font-weight:700;margin-bottom:10px;}
+  .service-card p{font-size:14.5px;color:var(--muted);line-height:1.6;margin-bottom:22px;min-height:64px;}
+  .service-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+  .price-tag{font-size:26px;font-weight:700;color:var(--text);}
+  .price-tag small{font-size:13px;color:var(--muted-2);font-weight:500;font-family:'Inter',sans-serif;}
+  .service-btn{
+    background:transparent;border:1px solid var(--border);color:var(--text);
+    padding:10px 18px;border-radius:6px;font-size:13px;font-weight:700;letter-spacing:.03em;
+    cursor:pointer;transition:.2s;
+  }
+  .service-btn:hover{background:var(--blue);color:#000;border-color:var(--blue);}
+
+  /* ===== PROCESS ===== */
+  .process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:60px;position:relative;}
+  @media (max-width:860px){.process-grid{grid-template-columns:1fr;gap:36px;}}
+  .process-step{position:relative;padding:0 22px;}
+  .process-step:not(:last-child)::after{
+    content:'';position:absolute;top:26px;right:-2px;width:calc(100% - 52px);height:1px;
+    background:repeating-linear-gradient(90deg,var(--border) 0 6px, transparent 6px 12px);
+  }
+  @media (max-width:860px){.process-step:not(:last-child)::after{display:none;}}
+  .step-num{
+    width:52px;height:52px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--blue);
+    margin-bottom:22px;position:relative;z-index:2;
+  }
+  .process-step h4{font-size:18px;font-weight:700;margin-bottom:8px;}
+  .process-step p{font-size:14px;color:var(--muted);line-height:1.6;}
+
+  /* ===== GALLERY ===== */
+  .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:54px;}
+  @media (max-width:860px){.gallery-grid{grid-template-columns:1fr 1fr;}}
+  @media (max-width:560px){.gallery-grid{grid-template-columns:1fr;}}
+  .gallery-item{
+    aspect-ratio:4/5;border-radius:12px;position:relative;overflow:hidden;
+    border:1px solid var(--border);cursor:default;
+  }
+  .gallery-item .g-bg{
+    position:absolute;inset:0;transition:transform .6s cubic-bezier(.22,1,.36,1);
+  }
+  .gallery-item:hover .g-bg{transform:scale(1.08);}
+  .g1{background:linear-gradient(155deg,#10131c,#1a2740 45%,#00475a 100%);}
+  .g2{background:linear-gradient(155deg,#1c1408,#3a2a08 45%,#7a5800 100%);}
+  .g3{background:linear-gradient(155deg,#0d0d10,#23232f 45%,#3d3d4d 100%);}
+  .g4{background:linear-gradient(155deg,#0a141a,#0d2b38 45%,#00829e 100%);}
+  .g5{background:linear-gradient(155deg,#160d0a,#3a1908 45%,#8a3000 100%);}
+  .g6{background:linear-gradient(155deg,#0c0c14,#1d1d2e 45%,#2e2e4a 100%);}
+  .gallery-item::before{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,.78), transparent 55%);z-index:1;
+  }
+  .g-caption{position:absolute;bottom:18px;left:20px;right:20px;z-index:2;}
+  .g-caption .g-model{font-size:16px;font-weight:700;}
+  .g-caption .g-tag{font-size:12.5px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;}
+
+  /* ===== REVIEWS ===== */
+  .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:54px;}
+  @media (max-width:900px){.reviews-grid{grid-template-columns:1fr;}}
+  .review-card{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:14px;
+    padding:30px;display:flex;flex-direction:column;gap:18px;
+  }
+  .stars{color:var(--amber);font-size:15px;letter-spacing:2px;}
+  .review-text{font-size:15px;color:var(--muted);line-height:1.65;flex-grow:1;}
+  .review-author{display:flex;align-items:center;gap:12px;}
+  .avatar{
+    width:42px;height:42px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#000;
+  }
+  .av1{background:linear-gradient(135deg,var(--blue),#0077a0);}
+  .av2{background:linear-gradient(135deg,var(--amber),#a87600);}
+  .av3{background:linear-gradient(135deg,#8a8aff,#5050cc);}
+  .author-name{font-size:14.5px;font-weight:700;}
+  .author-loc{font-size:12.5px;color:var(--muted-2);}
+
+  /* ===== CONTACT ===== */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:54px;}
+  @media (max-width:900px){.contact-grid{grid-template-columns:1fr;}}
+  .contact-info-block{display:flex;flex-direction:column;gap:28px;}
+  .info-row{display:flex;gap:16px;align-items:flex-start;}
+  .info-row .ic{
+    width:42px;height:42px;border-radius:9px;background:var(--surface-2);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;color:var(--amber);flex-shrink:0;
+  }
+  .info-row .ic svg{width:19px;height:19px;}
+  .info-row h5{font-size:15px;font-weight:700;margin-bottom:3px;}
+  .info-row p{font-size:14px;color:var(--muted);line-height:1.5;}
+
+  .form-card{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:38px;}
+  .field{margin-bottom:18px;}
+  .field label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:7px;letter-spacing:.02em;}
+  .field input,.field select{
+    width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;
+    padding:13px 14px;color:var(--text);font-size:14.5px;font-family:'Inter',sans-serif;
+    transition:border-color .2s;
+  }
+  .field input::placeholder{color:var(--muted-2);}
+  .field input:focus,.field select:focus{border-color:var(--blue);}
+  .field select{appearance:none;cursor:pointer;}
+  .form-msg{
+    display:none;margin-top:16px;padding:14px 16px;border-radius:8px;
+    background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.3);color:var(--blue);
+    font-size:14px;font-weight:600;
+  }
+  .form-msg.show{display:block;animation:fadeIn .4s forwards;}
+
+  /* ===== FOOTER ===== */
+  footer{border-top:1px solid var(--border);padding:50px 0 30px;background:var(--surface);}
+  .footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:30px;margin-bottom:36px;}
+  .footer-logo{font-size:22px;font-weight:700;}
+  .footer-logo span{color:var(--blue);}
+  .footer-tag{font-size:13.5px;color:var(--muted-2);margin-top:8px;max-width:280px;line-height:1.5;}
+  .footer-links{display:flex;gap:48px;flex-wrap:wrap;}
+  .footer-col h6{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .footer-col a{display:block;font-size:14px;color:var(--muted-2);margin-bottom:10px;transition:color .2s;}
+  .footer-col a:hover{color:var(--text);}
+  .footer-social{display:flex;gap:12px;}
+  .footer-social a{
+    width:38px;height:38px;border-radius:50%;border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.2s;
+  }
+  .footer-social a:hover{border-color:var(--blue);color:var(--blue);}
+  .footer-bottom{
+    border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted-2);
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a href="#hero" class="logo">TURBO<span>2K</span><span class="dot"></span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about" class="nav-link">Über uns</a></li>
+      <li><a href="#services" class="nav-link">Leistungen</a></li>
+      <li><a href="#process" class="nav-link">Ablauf</a></li>
+      <li><a href="#gallery" class="nav-link">Projekte</a></li>
+      <li><a href="#reviews" class="nav-link">Bewertungen</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Termin buchen</a>
+    <button class="burger" id="burger" aria-label="Menü"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="container hero-grid">
+    <div>
+      <h1 class="hero-title">Mehr Leistung.<br><em>Weniger Kompromisse.</em></h1>
+      <p class="hero-sub">TURBO2K ist Ihre Tuning-Studio für Chiptuning und technische Fahrzeugoptimierung. Wir entfalten das wahre Potenzial Ihres Motors — ohne die Lebensdauer oder Garantie zu gefährden.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">Diagnose-Termin vereinbaren</a>
+        <a href="#services" class="btn btn-outline">Leistungen ansehen</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num"><span>1200+</span></div><div class="stat-label">getunte Fahrzeuge</div></div>
+        <div><div class="stat-num"><span>+38%</span></div><div class="stat-label">Leistungszuwachs*</div></div>
+        <div><div class="stat-num"><span>7</span></div><div class="stat-label">Jahre Erfahrung</div></div>
+      </div>
+    </div>
+    <div class="tacho-wrap">
+      <div class="tacho-glow"></div>
+      <div class="tacho">
+        <svg viewBox="0 0 400 400">
+          <circle cx="200" cy="200" r="172" fill="none" stroke="#1c1c28" stroke-width="14"/>
+          <path d="M 200 200 L 200 200" />
+          <circle cx="200" cy="200" r="172" fill="none" stroke="#23232f" stroke-width="2"/>
+          <!-- tick marks -->
+          <g stroke="#3a3a4a" stroke-width="3">
+            <line x1="200" y1="40" x2="200" y2="58"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(30 200 200)"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(60 200 200)"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(90 200 200)"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(120 200 200)"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(150 200 200)"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(180 200 200)"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(210 200 200)"/>
+          </g>
+          <g stroke="#ff4466" stroke-width="4">
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(225 200 200)"/>
+            <line x1="200" y1="40" x2="200" y2="58" transform="rotate(240 200 200)"/>
+          </g>
+          <!-- redline arc -->
+          <path d="M 313 313 A 172 172 0 0 0 313 87" fill="none" stroke="#ff4466" stroke-width="6" opacity="0.5" stroke-linecap="round" transform="rotate(0 200 200)" />
+          <!-- needle -->
+          <g class="tacho-needle">
+            <line x1="200" y1="200" x2="200" y2="64" stroke="#00d4ff" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="200" cy="200" r="11" fill="#00d4ff"/>
+          </g>
+          <circle cx="200" cy="200" r="5" fill="#06060a"/>
+        </svg>
+        <div class="tacho-readout">
+          <div class="rpm">RPM × 1000</div>
+          <div class="val">7.8</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="container">
+    <div class="eyebrow reveal">Über das Studio</div>
+    <h2 class="section-title reveal reveal-d1">Ingenieurskunst statt<br>blind gedrehter Schrauben</h2>
+    <div class="about-grid">
+      <p class="about-text reveal reveal-d2">TURBO2K wurde von Ingenieuren gegründet, die zuvor mit Werks-Motorsteuerungen gearbeitet haben. Wir tunen nicht "nach Gefühl" — jedes Projekt durchläuft eine Prüfstandsdiagnose und eine individuelle Parameterberechnung für genau Ihr Fahrzeug.<br><br><strong>Unser Prinzip ist einfach:</strong> mehr Schub und besseres Ansprechverhalten ohne Risiko für Motor, Getriebe oder Lebensdauer. Die Werksgarantie bleibt erhalten, und Diagnosen "vorher/nachher" werden dokumentiert.</p>
+      <div class="perks">
+        <div class="perk reveal reveal-d1">
+          <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div>
+          <div><h4>Zertifizierte Ausstattung</h4><p>Bosch- und KESS3-Prüfstände für präzises Auslesen und Flashen der Steuergeräte.</p></div>
+        </div>
+        <div class="perk reveal reveal-d2">
+          <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <div><h4>Diagnose vorher/nachher</h4><p>Echte Prüfstandswerte im Protokoll — keine Versprechen, sondern Zahlen.</p></div>
+        </div>
+        <div class="perk reveal reveal-d3">
+          <div class="perk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <div><h4>Garantie auf die Arbeiten</h4><p>12 Monate Garantie auf Software und verbaute Komponenten.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section class="services" id="services">
+  <div class="container">
+    <div class="eyebrow reveal">Leistungen</div>
+    <h2 class="section-title reveal reveal-d1">Vier Wege zu mehr Leistung</h2>
+    <p class="section-sub reveal reveal-d1">Wir wählen die passende Tuning-Stufe nach Ihrem Fahrstil, Budget und Anforderungen an die Motorlebensdauer.</p>
+
+    <div class="services-grid">
+      <div class="service-card reveal reveal-d1">
+        <span class="service-tag">STAGE-1</span>
+        <h3>Software-Tuning ECU</h3>
+        <p>Optimierung der Werkssoftware ohne Eingriff in die Hardware. Wir entfernen Herstellerbeschränkungen und verbessern Ansprechverhalten sowie Drehmoment im unteren Drehzahlbereich.</p>
+        <div class="service-foot">
+          <div class="price-tag">199 €<br><small>ab</small></div>
+          <button class="service-btn">Mehr erfahren</button>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-d2">
+        <span class="service-tag">STAGE-2</span>
+        <h3>Tuning mit Anbauteilen</h3>
+        <p>Software-Anpassung an verbaute Ansaugung, Ladeluftkühler und Abgasanlage. Für alle, die bereits Hardware modifiziert haben und das volle Potenzial nutzen wollen.</p>
+        <div class="service-foot">
+          <div class="price-tag">449 €<br><small>ab</small></div>
+          <button class="service-btn">Mehr erfahren</button>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-d3">
+        <span class="service-tag">STAGE-3</span>
+        <h3>Maximale Leistungssteigerung</h3>
+        <p>Umfassende Aufrüstung von Turbolader, Kraftstoffsystem und Kühlung. Individuelle Kennfeld-Berechnung für Ihre Ausstattung und Ihren Einsatzzweck — Straße oder Rennstrecke.</p>
+        <div class="service-foot">
+          <div class="price-tag">1 190 €<br><small>ab</small></div>
+          <button class="service-btn">Mehr erfahren</button>
+        </div>
+      </div>
+
+      <div class="service-card reveal reveal-d4">
+        <span class="service-tag">AERO & FAHRWERK</span>
+        <h3>Aerodynamik & Fahrwerk</h3>
+        <p>Spoiler, Diffusoren, tiefere Sportfahrwerke und Geometrieabstimmung. Mehr Stabilität bei hoher Geschwindigkeit und präziseres Handling in Kurven.</p>
+        <div class="service-foot">
+          <div class="price-tag">790 €<br><small>ab</small></div>
+          <button class="service-btn">Mehr erfahren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROCESS ===== -->
+<section id="process">
+  <div class="container">
+    <div class="eyebrow reveal">So arbeiten wir</div>
+    <h2 class="section-title reveal reveal-d1">Von der Anfrage bis zur Übergabe — vier Schritte</h2>
+
+    <div class="process-grid">
+      <div class="process-step reveal reveal-d1">
+        <div class="step-num">01</div>
+        <h4>Anfrage</h4>
+        <p>Sie hinterlassen Ihre Kontaktdaten und Fahrzeugmodell — unser Ingenieur ruft innerhalb von 30 Minuten zurück.</p>
+      </div>
+      <div class="process-step reveal reveal-d2">
+        <div class="step-num">02</div>
+        <h4>Diagnose</h4>
+        <p>Prüfstandskontrolle des Motors, Auslesen der aktuellen Parameter und Auswahl des Tuning-Programms.</p>
+      </div>
+      <div class="process-step reveal reveal-d3">
+        <div class="step-num">03</div>
+        <h4>Durchführung</h4>
+        <p>Flashen oder Einbau der Komponenten in der Box — von 40 Minuten bis zu mehreren Tagen je nach Stufe.</p>
+      </div>
+      <div class="process-step reveal reveal-d4">
+        <div class="step-num">04</div>
+        <h4>Übergabe</h4>
+        <p>Kontrollfahrt, Vorher/Nachher-Protokoll und Garantieunterlagen für Sie.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALLERY ===== -->
+<section id="gallery">
+  <div class="container">
+    <div class="eyebrow reveal">Portfolio</div>
+    <h2 class="section-title reveal reveal-d1">Aktuelle Projekte der Studio</h2>
+
+    <div class="gallery-grid">
+      <div class="gallery-item reveal reveal-d1"><div class="g-bg g1"></div><div class="g-caption"><div class="g-model">BMW M340i</div><div class="g-tag">Stage-2 · +94 PS</div></div></div>
+      <div class="gallery-item reveal reveal-d2"><div class="g-bg g2"></div><div class="g-caption"><div class="g-model">Audi RS3</div><div class="g-tag">Stage-3 · Track-Paket</div></div></div>
+      <div class="gallery-item reveal reveal-d3"><div class="g-bg g3"></div><div class="g-caption"><div class="g-model">VW Golf GTI</div><div class="g-tag">Stage-1 · Software</div></div></div>
+      <div class="gallery-item reveal reveal-d1"><div class="g-bg g4"></div><div class="g-caption"><div class="g-model">Mercedes C43 AMG</div><div class="g-tag">Aero & Fahrwerk</div></div></div>
+      <div class="gallery-item reveal reveal-d2"><div class="g-bg g5"></div><div class="g-caption"><div class="g-model">Toyota Supra A90</div><div class="g-tag">Stage-2 · +110 PS</div></div></div>
+      <div class="gallery-item reveal reveal-d3"><div class="g-bg g6"></div><div class="g-caption"><div class="g-model">Skoda Octavia RS</div><div class="g-tag">Stage-1 · Software</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REVIEWS ===== -->
+<section id="reviews">
+  <div class="container">
+    <div class="eyebrow reveal">Bewertungen</div>
+    <h2 class="section-title reveal reveal-d1">Was unsere Kunden sagen</h2>
+
+    <div class="reviews-grid">
+      <div class="review-card reveal reveal-d1">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">Stage-2 für meinen Golf GTI gemacht. Das Auto ist wie neu — der Schub im unteren Drehzahlbereich ist komplett anders, und auf der Autobahn überhole ich jetzt mühelos. Alles nach Protokoll, nichts "auf gut Glück".</p>
+        <div class="review-author"><div class="avatar av1">TM</div><div><div class="author-name">Thomas Müller</div><div class="author-loc">München</div></div></div>
+      </div>
+      <div class="review-card reveal reveal-d2">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">Habe drei Studios verglichen, bevor ich mich für TURBO2K entschieden habe — keine Reue. Echte Prüfstandswerte vorher und nachher, nichts wurde verschwiegen. Stage-1 am Octavia RS ist sofort spürbar.</p>
+        <div class="review-author"><div class="avatar av2">SK</div><div><div class="author-name">Sandra Klein</div><div class="author-loc">Berlin</div></div></div>
+      </div>
+      <div class="review-card reveal reveal-d3">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">Maximale Leistungssteigerung am Supra — großer Respekt für die Ingenieure. Jeder Schritt wurde erklärt, warum genau diese Kennfelder und nicht mehr. Das Auto fährt sich wie ab Werk getunt, kein "Garagen-Upgrade".</p>
+        <div class="review-author"><div class="avatar av3">FW</div><div><div class="author-name">Felix Wagner</div><div class="author-loc">Hamburg</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+  <div class="container">
+    <div class="eyebrow reveal">Kontakt</div>
+    <h2 class="section-title reveal reveal-d1">Bereit, das Potenzial Ihres Autos zu entfalten?</h2>
+    <p class="section-sub reveal reveal-d1">Hinterlassen Sie eine Anfrage — wir rufen innerhalb von 30 Minuten zurück und wählen das passende Tuning-Programm für Ihr Fahrzeug.</p>
+
+    <div class="contact-grid">
+      <div class="contact-info-block reveal reveal-d2">
+        <div class="info-row">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><h5>Adresse</h5><p>Industriestraße 14, Halle 3<br>80339 München</p></div>
+        </div>
+        <div class="info-row">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h2.5l1.5 5-2 1.5a12 12 0 006 6l1.5-2 5 1.5V19a2 2 0 01-2 2h-1C9.5 21 3 14.5 3 6V5z"/></svg></div>
+          <div><h5>Telefon</h5><p>+49 (0) 89 200 20 20</p></div>
+        </div>
+        <div class="info-row">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <div><h5>Öffnungszeiten</h5><p>Mo–Sa: 09:00–20:00<br>So: nach Vereinbarung</p></div>
+        </div>
+      </div>
+
+      <div class="form-card reveal reveal-d3">
+        <form id="leadForm">
+          <div class="field">
+            <label for="f-name">Name</label>
+            <input id="f-name" type="text" placeholder="Wie dürfen wir Sie ansprechen" required>
+          </div>
+          <div class="field">
+            <label for="f-phone">Telefon</label>
+            <input id="f-phone" type="tel" placeholder="+49 (0) ___ ___ ____" required>
+          </div>
+          <div class="field">
+            <label for="f-car">Fahrzeugmarke & Modell</label>
+            <input id="f-car" type="text" placeholder="z. B. BMW 330i F30">
+          </div>
+          <div class="field">
+            <label for="f-service">Leistung</label>
+            <select id="f-service">
+              <option>Stage-1 · Software-Tuning ECU</option>
+              <option>Stage-2 · Tuning mit Anbauteilen</option>
+              <option>Stage-3 · Maximale Leistungssteigerung</option>
+              <option>Aerodynamik & Fahrwerk</option>
+              <option>Noch unentschlossen — Beratung gewünscht</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-amber btn-full">Anfrage senden</button>
+          <div class="form-msg" id="formMsg">Vielen Dank! Wir melden uns innerhalb von 30 Minuten bei Ihnen.</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">TURBO<span>2K</span></div>
+        <p class="footer-tag">Studio für Chiptuning und technische Fahrzeugoptimierung im Premiumsegment.</p>
+        <div class="footer-social" style="margin-top:18px;">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="Telegram">TG</a>
+          <a href="#" aria-label="YouTube">YT</a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h6>Navigation</h6>
+          <a href="#about">Über uns</a>
+          <a href="#services">Leistungen</a>
+          <a href="#gallery">Projekte</a>
+        </div>
+        <div class="footer-col">
+          <h6>Leistungen</h6>
+          <a href="#services">Stage-1</a>
+          <a href="#services">Stage-2</a>
+          <a href="#services">Stage-3</a>
+        </div>
+        <div class="footer-col">
+          <h6>Kontakt</h6>
+          <a href="tel:+498920020">+49 (0) 89 200 20 20</a>
+          <a href="#contact">Anfrage senden</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 TURBO2K. Alle Rechte vorbehalten.</span>
+      <span>*Leistungszuwachs abhängig von Modell und Motorzustand</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Navbar scroll state
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 30);
+  });
+
+  // Mobile menu
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    burger.classList.remove('open');
+    navLinks.classList.remove('open');
+  }));
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => io.observe(el));
+
+  // Contact form
+  const form = document.getElementById('leadForm');
+  const msg = document.getElementById('formMsg');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    msg.classList.add('show');
+    form.querySelector('button[type="submit"]').textContent = 'Anfrage gesendet ✓';
+    setTimeout(() => { form.reset(); }, 600);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Мої тренування</title>
+<style>
+  :root{
+    --bg:#f3f4f7;
+    --card:#ffffff;
+    --text:#16181d;
+    --muted:#6b7080;
+    --border:#e3e5ea;
+    --accent:#2f7cf6;
+    --accent-soft:#e6efff;
+    --ok:#1f9d55;
+    --ok-soft:#e3f6ea;
+    --warn:#d14343;
+    --warn-soft:#fdeaea;
+    --disabled:#eceef2;
+    --shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0f1115;
+      --card:#1a1d24;
+      --text:#eef0f4;
+      --muted:#9aa0ad;
+      --border:#2a2e37;
+      --accent:#5b9bff;
+      --accent-soft:#1d2a42;
+      --ok:#3ccf7d;
+      --ok-soft:#173022;
+      --warn:#ff6b6b;
+      --warn-soft:#3a1d1f;
+      --disabled:#23262e;
+      --shadow:none;
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg);color:var(--text);}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased;}
+  button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;}
+  .wrap{max-width:480px;margin:0 auto;padding:16px 16px 96px;}
+  header{display:flex;align-items:center;justify-content:space-between;margin:4px 0 16px;}
+  header h1{font-size:22px;font-weight:700;}
+  header .sub{color:var(--muted);font-size:13px;}
+  .avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;}
+  h2{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:20px 4px 8px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);}
+  .card + .card{margin-top:10px;}
+  .big{font-size:34px;font-weight:700;line-height:1;}
+  .big small{font-size:16px;font-weight:500;color:var(--muted);}
+  .muted{color:var(--muted);font-size:13px;}
+  .bar{height:8px;border-radius:4px;background:var(--disabled);margin:12px 0 8px;overflow:hidden;}
+  .bar > i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .3s;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;}
+  .pill.ok{background:var(--ok-soft);color:var(--ok);}
+  .pill.miss{background:var(--warn-soft);color:var(--warn);}
+  .pill.info{background:var(--accent-soft);color:var(--accent);}
+  .btn{background:var(--accent);color:#fff;font-weight:600;padding:10px 16px;border-radius:12px;}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--border);}
+  .btn.danger{background:transparent;color:var(--warn);border:1px solid var(--border);}
+  .btn.full{width:100%;}
+  .next-date{font-size:18px;font-weight:700;}
+  .list-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--border);}
+  .list-item:first-child{border-top:none;padding-top:0;}
+  .list-item:last-child{padding-bottom:0;}
+  .date-box{width:48px;flex:none;text-align:center;border-radius:10px;background:var(--accent-soft);color:var(--accent);padding:6px 0;}
+  .date-box b{display:block;font-size:18px;line-height:1.1;}
+  .date-box span{font-size:11px;text-transform:uppercase;}
+  .grow{flex:1;min-width:0;}
+  .title{font-weight:600;}
+  .note{display:flex;align-items:center;gap:10px;font-size:14px;}
+  .days{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin:0 -2px;scrollbar-width:none;}
+  .days::-webkit-scrollbar{display:none;}
+  .day{flex:none;width:56px;padding:8px 0;border-radius:12px;background:var(--card);border:1px solid var(--border);text-align:center;}
+  .day b{display:block;font-size:18px;}
+  .day span{font-size:12px;color:var(--muted);}
+  .day.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .day.active span{color:#fff;}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .slot{padding:12px 0;border-radius:12px;border:1px solid var(--border);background:var(--card);font-weight:600;text-align:center;}
+  .slot:disabled{background:var(--disabled);color:var(--muted);cursor:default;text-decoration:line-through;}
+  .slot.mine{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);text-decoration:none;}
+  .slot small{display:block;font-size:11px;font-weight:500;}
+  .legend{display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--muted);flex-wrap:wrap;}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--border);}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .stats .card + .card{margin-top:0;}
+  .empty{text-align:center;color:var(--muted);padding:8px 0;}
+  nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);}
+  nav .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);}
+  nav a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 12px;font-size:12px;color:var(--muted);text-decoration:none;}
+  nav a .ic{font-size:20px;line-height:1;}
+  nav a.active{color:var(--accent);font-weight:600;}
+  .page{display:none;}
+  .page.active{display:block;}
+  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:10;}
+  .sheet-bg.open{display:flex;}
+  .sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));}
+  .sheet h3{font-size:18px;margin-bottom:6px;}
+  .sheet .actions{display:flex;gap:10px;margin-top:18px;}
+  .sheet .actions .btn{flex:1;}
+  .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);text-align:center;z-index:20;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .reset{display:block;margin:24px auto 0;color:var(--muted);font-size:13px;text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="hello">Привіт!</h1>
+      <div class="sub">Студія персональних тренувань</div>
+    </div>
+    <div class="avatar" id="avatar">О</div>
+  </header>
+
+  <!-- 1. Мій абонемент -->
+  <section class="page" id="page-home">
+    <div class="card" id="sub-card"></div>
+
+    <h2>Наступне тренування</h2>
+    <div class="card" id="next-card"></div>
+
+    <h2>Нагадування</h2>
+    <div class="card note"><span>🔔</span><div class="grow">Нагадування в Telegram за 2 години до тренування</div><span class="pill ok">Увімкнено</span></div>
+
+    <h2 id="prices">Абонементи</h2>
+    <div id="price-list"></div>
+
+    <button class="reset" id="reset">Скинути демо-дані</button>
+  </section>
+
+  <!-- 2. Записатись -->
+  <section class="page" id="page-book">
+    <div class="card row" style="margin-bottom:4px">
+      <div><div class="muted">Доступно занять</div><div class="big" id="book-left">0</div></div>
+      <span class="pill info">Тренування 60 хв</span>
+    </div>
+    <h2>Оберіть день</h2>
+    <div class="days" id="days"></div>
+    <h2>Вільний час</h2>
+    <div class="card">
+      <div class="slots" id="slots"></div>
+      <div class="legend">
+        <span><i style="background:var(--card)"></i>Вільно</span>
+        <span><i style="background:var(--disabled)"></i>Зайнято</span>
+        <span><i style="background:var(--ok-soft);border-color:var(--ok)"></i>Ваш запис</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Історія -->
+  <section class="page" id="page-history">
+    <div class="stats">
+      <div class="card"><div class="muted">Відвідано</div><div class="big" id="st-done">0</div></div>
+      <div class="card"><div class="muted">Пропущено</div><div class="big" id="st-miss">0</div></div>
+    </div>
+    <h2>Заплановані</h2>
+    <div class="card" id="upcoming-list"></div>
+    <h2>Минулі тренування</h2>
+    <div class="card" id="history-list"></div>
+  </section>
+</div>
+
+<nav>
+  <div class="in">
+    <a href="#home" data-page="home"><span class="ic">🎫</span>Абонемент</a>
+    <a href="#book" data-page="book"><span class="ic">📅</span>Записатись</a>
+    <a href="#history" data-page="history"><span class="ic">📋</span>Історія</a>
+  </div>
+</nav>
+
+<div class="sheet-bg" id="sheet-bg">
+  <div class="sheet">
+    <h3 id="sheet-title"></h3>
+    <div class="muted" id="sheet-text"></div>
+    <div class="actions">
+      <button class="btn ghost" id="sheet-no">Назад</button>
+      <button class="btn" id="sheet-yes">Так</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'trainings-prototype-v1';
+  const TIMES = ['08:00','09:00','10:00','11:00','17:00','18:00','19:00','20:00','21:00'];
+  const DAYS_SHORT = ['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const MONTHS = ['січ','лют','бер','кві','тра','чер','лип','сер','вер','жов','лис','гру'];
+  const PRICES = [
+    {name:'4 заняття', price:1600, note:'діє 30 днів'},
+    {name:'8 занять', price:2800, note:'діє 45 днів', hit:true},
+    {name:'12 занять', price:3900, note:'діє 60 днів'},
+  ];
+
+  // ---------- дати ----------
+  function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function addDays(n){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+n); return d; }
+  function parse(dateIso){ const [y,m,d] = dateIso.split('-').map(Number); return new Date(y,m-1,d); }
+  function nice(dateIso){ const d = parse(dateIso); return DAYS_SHORT[d.getDay()]+', '+d.getDate()+' '+MONTHS[d.getMonth()]; }
+  function nowKey(){ const n = new Date(); return iso(n)+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
+
+  // ---------- мок-дані ----------
+  function initialState(){
+    return {
+      client:{name:'Олена'},
+      subscription:{name:'8 занять', total:8, left:4, until:iso(addDays(24))},
+      bookings:[
+        {id:1, date:iso(addDays(2)), time:'18:00', type:'Силове'},
+      ],
+      history:[
+        {date:iso(addDays(-2)),  time:'18:00', type:'Силове',         status:'done'},
+        {date:iso(addDays(-5)),  time:'19:00', type:'Функціональне',  status:'done'},
+        {date:iso(addDays(-9)),  time:'18:00', type:'Силове',         status:'miss'},
+        {date:iso(addDays(-12)), time:'10:00', type:'Кардіо',         status:'done'},
+        {date:iso(addDays(-16)), time:'18:00', type:'Силове',         status:'done'},
+        {date:iso(addDays(-19)), time:'19:00', type:'Функціональне',  status:'done'},
+      ],
+      nextId:2,
+    };
+  }
+
+  let state;
+  function load(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+    return initialState();
+  }
+  function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+  state = load();
+
+  // Зайняті іншими клієнтами слоти — детерміновано «випадкові», щоб не мінялись між перезавантаженнями.
+  function busyByOthers(date, time){
+    let h = 0; const s = date+time;
+    for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) >>> 0;
+    return h % 3 === 0;
+  }
+  function upcoming(){
+    const now = nowKey();
+    return state.bookings.filter(b => b.date+' '+b.time > now).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+  }
+  function types(){ return ['Силове','Функціональне','Кардіо']; }
+
+  // ---------- UI helpers ----------
+  const $ = id => document.getElementById(id);
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  let toastTimer;
+  function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200); }
+  let sheetAction = null;
+  function confirmSheet(title, text, yesLabel, onYes){
+    $('sheet-title').textContent = title; $('sheet-text').textContent = text; $('sheet-yes').textContent = yesLabel;
+    sheetAction = onYes; $('sheet-bg').classList.add('open');
+  }
+  function closeSheet(){ $('sheet-bg').classList.remove('open'); sheetAction = null; }
+  $('sheet-no').onclick = closeSheet;
+  $('sheet-bg').onclick = e => { if(e.target.id === 'sheet-bg') closeSheet(); };
+  $('sheet-yes').onclick = () => { const a = sheetAction; closeSheet(); if(a) a(); };
+
+  function dateBox(dateIso){ const d = parse(dateIso); return '<div class="date-box"><b>'+d.getDate()+'</b><span>'+MONTHS[d.getMonth()]+'</span></div>'; }
+
+  // ---------- дії ----------
+  function book(date, time){
+    if(state.subscription.left <= 0){ toast('Заняття закінчились — придбайте абонемент'); return; }
+    const type = types()[state.nextId % 3];
+    state.bookings.push({id:state.nextId++, date, time, type});
+    state.subscription.left--;
+    save(); render();
+    toast('Ви записані на '+nice(date)+', '+time+' ✅');
+  }
+  function cancel(id){
+    const b = state.bookings.find(x => x.id === id); if(!b) return;
+    confirmSheet('Скасувати тренування?', nice(b.date)+', '+b.time+' · '+b.type+'. Заняття повернеться на ваш абонемент.', 'Скасувати', () => {
+      state.bookings = state.bookings.filter(x => x.id !== id);
+      state.subscription.left = Math.min(state.subscription.total, state.subscription.left + 1);
+      save(); render(); toast('Тренування скасовано, заняття повернено');
+    });
+  }
+
+  // ---------- рендер ----------
+  let selectedDay = iso(addDays(0));
+
+  function renderHome(){
+    const s = state.subscription;
+    $('hello').textContent = 'Привіт, '+state.client.name+'!';
+    $('avatar').textContent = state.client.name[0];
+    const pct = s.total ? Math.round(s.left / s.total * 100) : 0;
+    $('sub-card').innerHTML =
+      '<div class="row"><div class="muted">Абонемент «'+esc(s.name)+'»</div>'+
+      (s.left > 0 ? '<span class="pill ok">Активний</span>' : '<span class="pill miss">Закінчився</span>')+'</div>'+
+      '<div style="margin-top:10px" class="big">'+s.left+' <small>з '+s.total+' занять залишилось</small></div>'+
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+      '<div class="muted">Діє до '+nice(s.until)+'</div>';
+
+    const next = upcoming()[0];
+    $('next-card').innerHTML = next
+      ? '<div class="list-item">'+dateBox(next.date)+'<div class="grow"><div class="next-date">'+nice(next.date)+', '+next.time+'</div><div class="muted">'+esc(next.type)+' · 60 хв</div></div></div>'+
+        '<div class="row" style="margin-top:14px;gap:10px"><a class="btn ghost" style="flex:1;text-align:center;text-decoration:none" href="#book">Ще запис</a><button class="btn danger" style="flex:1" data-cancel="'+next.id+'">Скасувати</button></div>'
+      : '<div class="empty">Поки немає запланованих тренувань</div><a class="btn full" style="display:block;text-align:center;text-decoration:none;margin-top:10px" href="#book">Записатись</a>';
+
+    $('price-list').innerHTML = PRICES.map(p =>
+      '<div class="card row"><div><div class="title">'+p.name+(p.hit ? ' <span class="pill info">Популярний</span>' : '')+'</div>'+
+      '<div class="muted">'+p.price.toLocaleString('uk-UA')+' грн · '+p.note+'</div></div>'+
+      '<button class="btn" data-buy="'+p.name+'">Купити</button></div>').join('');
+  }
+
+  function renderBook(){
+    $('book-left').textContent = state.subscription.left;
+    let days = '';
+    for(let i=0;i<7;i++){
+      const d = addDays(i), k = iso(d);
+      days += '<button class="day'+(k===selectedDay?' active':'')+'" data-day="'+k+'"><span>'+(i===0?'Сьог.':DAYS_SHORT[d.getDay()])+'</span><b>'+d.getDate()+'</b></button>';
+    }
+    $('days').innerHTML = days;
+
+    const now = nowKey();
+    $('slots').innerHTML = TIMES.map(t => {
+      const mine = state.bookings.find(b => b.date === selectedDay && b.time === t);
+      if(mine) return '<button class="slot mine" data-cancel="'+mine.id+'">'+t+'<small>ваш запис</small></button>';
+      const past = selectedDay+' '+t <= now;
+      const busy = past || busyByOthers(selectedDay, t);
+      return '<button class="slot" '+(busy?'disabled':'data-slot="'+t+'"')+'>'+t+'</button>';
+    }).join('');
+  }
+
+  function renderHistory(){
+    const h = state.history.slice().sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
+    $('st-done').textContent = h.filter(x => x.status==='done').length;
+    $('st-miss').textContent = h.filter(x => x.status==='miss').length;
+    const up = upcoming();
+    $('upcoming-list').innerHTML = up.length
+      ? up.map(b => '<div class="list-item">'+dateBox(b.date)+'<div class="grow"><div class="title">'+esc(b.type)+'</div><div class="muted">'+nice(b.date)+', '+b.time+'</div></div><span class="pill info">Заплановано</span></div>').join('')
+      : '<div class="empty">Немає запланованих</div>';
+    $('history-list').innerHTML = h.length
+      ? h.map(x => '<div class="list-item">'+dateBox(x.date)+'<div class="grow"><div class="title">'+esc(x.type)+'</div><div class="muted">'+nice(x.date)+', '+x.time+'</div></div>'+
+          (x.status==='done' ? '<span class="pill ok">Відвідано</span>' : '<span class="pill miss">Пропущено</span>')+'</div>').join('')
+      : '<div class="empty">Ще немає тренувань</div>';
+  }
+
+  function render(){ renderHome(); renderBook(); renderHistory(); }
+
+  // ---------- навігація ----------
+  function route(){
+    const page = (location.hash || '#home').slice(1).split('-')[0];
+    const valid = ['home','book','history'].includes(page) ? page : 'home';
+    document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-'+valid));
+    document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.dataset.page === valid));
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange', route);
+
+  // ---------- делегування кліків ----------
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-day],[data-slot],[data-cancel],[data-buy]');
+    if(!el) return;
+    if(el.dataset.day){ selectedDay = el.dataset.day; renderBook(); }
+    else if(el.dataset.slot){
+      const t = el.dataset.slot, d = selectedDay;
+      if(state.subscription.left <= 0){
+        confirmSheet('Заняття закінчились', 'Щоб записатись, придбайте новий абонемент.', 'До цін', () => { location.hash = '#home'; setTimeout(() => $('prices').scrollIntoView({behavior:'smooth'}), 50); });
+        return;
+      }
+      confirmSheet('Записатись на '+nice(d)+', '+t+'?', 'З абонемента спишеться 1 заняття. Залишиться: '+(state.subscription.left-1)+'. Нагадування прийде в Telegram.', 'Записатись', () => book(d, t));
+    }
+    else if(el.dataset.cancel){ cancel(Number(el.dataset.cancel)); }
+    else if(el.dataset.buy){ toast('Оплата буде в наступній версії 🙂'); }
+  });
+  $('reset').onclick = () => { state = initialState(); save(); selectedDay = iso(addDays(0)); render(); toast('Демо-дані скинуто'); };
+
+  // Якщо відкрито всередині Telegram — розгорнути на весь екран.
+  try{ if(window.Telegram && Telegram.WebApp){ Telegram.WebApp.ready(); Telegram.WebApp.expand(); } }catch(e){}
+
+  render(); route();
+})();
+</script>
+</body>
+</html>
